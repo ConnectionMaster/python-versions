@@ -21,9 +21,14 @@ function Analyze-MissingModules([string] $buildOutputLocation) {
     $regexMatch = [regex]::match($SplitBuiltOutput, $Pattern)
     if ($regexMatch.Success)
     {
+        $module = $regexMatch.Groups[1].Value.Trim()
         Write-Host "Failed missing modules:"
-        Write-Host $regexMatch.Groups[1].Value
-        return 1
+        Write-Host $module
+        if ( ($module -eq "_tkinter") -and ( ($Version -like "3.10.0-beta*") -or ($Version -like "3.10.0-alpha*") ) ) {
+          Write-Host "$module $Version ignored"
+        } else {
+          return 1
+        }
     }
 
     return 0
